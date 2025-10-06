@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<!-- head 안에 (기존 viewport 교체) -->
+<meta name="viewport" content="user-scalable=no" />
+      <title>HTML</title>
+  
+  <!-- HTML -->
+  
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <canvas id="canvas"></canvas>
+  
+  <div id="panel" class="panel" aria-expanded="false">
+    <!-- 닫힘 전용: 버튼 3개 -->
+    <div id="objbar" class="panel__compact when-closed" aria-hidden="false">
+      <button class="pill" id="btn-mortar" data-action="mortar">박격포</button>
+      <button class="pill" id="btn-farbar" data-action="farbar">원겨냥대</button>
+      <button class="pill" id="btn-nearbar" data-action="nearbar">근겨냥대</button>
+      <button class="pill" id="btn-stdbar" data-action="stdbar">기준겨냥대</button>
+      <button class="pill" id="btn-target" data-action="target">타겟</button>
+      <button class="pill" id="btn-observer" data-action="observer">관측자</button>
+    </div>
+  
+    <!-- 열림 전용: 슬라이더 4개 -->
+    <div class="panel__expanded when-open" aria-hidden="true">
+    </div>
+  </div>
+  <!-- Project -->
+  
+  <template id="tpl-mortar">
+    <div class="panel-info">
+      <span class="main-content">
+        <span class ="obj-type">박격표</span>
+        <span class="obj-position">00000 00000</span>
+      </span>
+      <span class="right-buttons">
+        <button class="panel-buttons obj-delete">삭제</button>
+      </span>
+    </div>
+      
+    </div>
+    <div class="field">
+      <label for="declination">포조준방위각</label>
+      <input type="text" name="" id="decl-inp">
+      <input type="range" id="decl-rng" min="0" max="6400" value="800">
+    </div>
+    <div class="field">
+      <label for="sightangle">편각</label>
+      <input type="text" name="" id="sigh-inp">
+      <input type="range" id="sigh-rng" min="0" max="6400" value="3200">
+    </div>
+    <div class="field">
+      <label for="elevation">사각</label>
+      <input type="text" name="" id="elev-inp">
+      <input type="range" id="elev-rng" min="800" max="1511" value="800">
+    </div>
+  </template>
+  
+  <template id="tpl-farbar">
+    <div class="panel-info">
+      <span class="main-content">
+        <span class ="obj-type">박격표</span>
+        <span class="obj-position">00000 00000</span>
+      </span>
+      <span class="right-buttons">
+        <button class="panel-buttons obj-delete">삭제</button>
+      </span>
+    </div>
+  </template>
+  
+  <template id="tpl-nearbar">
+    <div class="panel-info">
+      <span class="main-content">
+        <span class="obj-type">박격표</span>
+        <span class="obj-position">00000 00000</span>
+      </span>
+      <span class="right-buttons">
+        <button class="panel-buttons obj-delete">삭제</button>
+      </span>
+    </div>
+  </template>
+  
+  <template id="tpl-stdbar">
+    <div class="panel-info">
+      <span class="main-content">
+        <span class="obj-type">박격표</span>
+        <span class="obj-position">00000 00000</span>
+      </span>
+      <span class="right-buttons">
+        <button class="panel-buttons obj-delete">삭제</button>
+      </span>
+    </div>
+    
+    <div class="field">
+      <label for="declination">편각</label>
+      <input type="text" name="" id="decl-inp">
+      <input type="range" id="decl-rng" min="0" max="6400" value="800">
+    </div>
+  </template>
+  
+  <template id="tpl-target">
+    <div class="panel-info">
+      <span class="main-content">
+        <span class="obj-type">박격표</span>
+        <span class="obj-position">00000 00000</span>
+      </span>
+      <span class="right-buttons">
+        <button class="panel-buttons obj-delete">삭제</button>
+      </span>
+    </div>
+  </template>
+  
+  <template id="tpl-observer">
+    <div class="panel-info">
+      <span class="main-content">
+        <span class="obj-type">박격표</span>
+        <span class="obj-position">00000 00000</span>
+      </span>
+      <span class="right-buttons">
+        <button class="panel-buttons obj-delete">삭제</button>
+      </span>
+    </div>
+    <div class="field">
+      <label for="declination">편각</label>
+      <input type="text" name="" id="decl-inp">
+      <input type="range" id="decl-rng" min="0" max="6400" value="800">
+    </div>
+    <div class="field">
+      <label for="distance">거리</label>
+      <input type="text" name="" id="dist-inp">
+      <input type="range" id="dist-rng" min="0" max="6400" value="0">
+    </div>
+  </template>
+  
+  
+  <script src="math.js" defer></script>
+  <script src="main.js"></script>
+  <script>
+  (function () {
+    const vp = document.getElementById('vp');
+    if (!vp) return;
+    const base = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+
+    const inputs = document.querySelectorAll('input, textarea, select');
+    inputs.forEach(el => {
+      el.addEventListener('blur', () => {
+        // 한 프레임 동안 재설정해 원래 배율로 스냅
+        vp.setAttribute('content', base); 
+        setTimeout(() => vp.setAttribute('content', base), 0);
+      });
+    });
+  })();
+</script>
+</body>
+</html>
