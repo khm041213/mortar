@@ -17,6 +17,15 @@
 <body>
   <canvas id="canvas"></canvas>
   
+  <div id="pos_inp">
+    <input type="number" id="inp_posX" value="">
+    <input type="number" id="inp_posY">
+    <input type="submit" name="" id="sub_pos" value="이동"/>
+    <div id="pos_text">
+      카메라 좌표
+    </div>
+  </div>
+  
   <div id="panel" class="panel" aria-expanded="false">
     <!-- 닫힘 전용: 버튼 3개 -->
     <div id="objbar" class="panel__compact when-closed" aria-hidden="false">
@@ -47,7 +56,7 @@
       
     </div>
     <div class="field">
-      <label for="declination">포조준방위각</label>
+      <label for="declination">포구방향</label>
       <input type="text" name="" id="decl-inp">
       <input type="range" id="decl-rng" min="0" max="6400" value="800">
     </div>
@@ -99,7 +108,7 @@
     </div>
     
     <div class="field">
-      <label for="declination">편각</label>
+      <label for="declination">포조준방위각</label>
       <input type="text" name="" id="decl-inp">
       <input type="range" id="decl-rng" min="0" max="6400" value="800">
     </div>

@@ -19,6 +19,8 @@ class DrawManage{
     
     this.lineWidth= this.viewport.strLineWidth * this.camera.zoom;
     
+    this.objScale = 10;
+    
     this.worldToCanvasMatrix = this.buildWorldToCanvasMatrix();
     this.cameraMatrix = this.buildCameraMatrix();
   }
@@ -38,6 +40,7 @@ class DrawManage{
 
     return math.multiply(T, S);
   }
+  
 
   buildCameraMatrix(){
     const T = math.matrix([
@@ -45,7 +48,8 @@ class DrawManage{
       [0, 1, -this.camera.y],
       [0, 0, 1]
     ]);
-
+  
+    
     const S = math.matrix([
       [this.camera.zoom, 0, 0],
       [0, this.camera.zoom, 0],
@@ -55,13 +59,6 @@ class DrawManage{
     return math.multiply(S, T);
   }
   
-  buildCameraMatrixWithoutScale(){
-    return math.matrix([
-      [1, 0, -this.camera.x],
-      [0, 1, -this.camera.y],
-      [0, 0, 1]
-    ]);
-  }
 
   clear(){
     this.ctx.clearRect(0, 0, this.viewport.width, this.viewport.height);
@@ -294,13 +291,19 @@ class DrawManage{
     
     const sightPos = {x : -0.15, y : 0.3}
     const sightMatrix = math.matrix([[sightPos.x],[sightPos.y],[1]])
-    
+    const scale = this.objScale;
+    const scaleMatrix = math.matrix([
+      [scale, 0, 0],
+      [0, scale, 0],
+      [0, 0, 1]
+    ])
     const mortarAngle = millToRad(obj.declination);
     const sightAngle = Math.PI + millToRad(obj.sightangle) + mortarAngle;
     
     const convertedPos = math.multiply(
       this.buildWorldToCanvasMatrix(),
       this.buildCameraMatrix(),
+      
       centerMatrix
     );
     
@@ -319,6 +322,7 @@ class DrawManage{
       this.buildCameraMatrix(),
       pos,
       angleMatrix,
+      scaleMatrix,
       sightMatrix
     );
     
@@ -389,6 +393,13 @@ class DrawManage{
     let mortarWidth = 0.1
     let mortarDiskRad = 0.3
     let mortarLength = 0.7
+    
+    const scale = this.objScale;
+    const scaleMatrix = math.matrix([
+      [scale, 0, 0],
+      [0, scale, 0],
+      [0, 0, 1]
+    ])
     
     const sightPos = {x : -0.15, y : 0.3}
     
@@ -470,7 +481,7 @@ class DrawManage{
           case 'cir': {
             const cx = drawing.x;
             const cy = drawing.y;
-            const radius = drawing.radius * this.camera.zoom * this.viewport.pixelPerGrid;
+            const radius = drawing.radius * this.camera.zoom * this.viewport.pixelPerGrid * scale;
           
             const centerMatrix = math.matrix([[cx],[cy],[1]]);
           
@@ -479,6 +490,7 @@ class DrawManage{
               this.buildCameraMatrix(),
               pos, 
               angleMatrix,
+              scaleMatrix,
               centerMatrix
             );
           
@@ -488,7 +500,7 @@ class DrawManage{
             this.ctx.beginPath();       
             this.ctx.arc(x, y, radius, 0, 2*Math.PI)
             this.ctx.strokeStyle = 'black';
-            this.ctx.lineWidth   = this.lineWidth;
+            this.ctx.lineWidth   = this.lineWidth * scale;
             this.ctx.fillStyle = "white"
             this.ctx.fill();
             this.ctx.stroke();
@@ -499,7 +511,7 @@ class DrawManage{
           case 'arc': {
             const cx = drawing.x;
             const cy = drawing.y;
-            const radius = drawing.radius * this.camera.zoom * this.viewport.pixelPerGrid;
+            const radius = drawing.radius * this.camera.zoom * this.viewport.pixelPerGrid * scale;
           
             const centerMatrix = math.matrix([[cx],[cy],[1]]);
             
@@ -508,6 +520,7 @@ class DrawManage{
               this.buildCameraMatrix(),
               pos, 
               angleMatrix,
+              scaleMatrix,
               centerMatrix
             );
             
@@ -519,7 +532,7 @@ class DrawManage{
             this.ctx.beginPath();     
             this.ctx.arc(x, y, radius, drawing.beginAngle + angle, drawing.endAngle + angle);
             this.ctx.strokeStyle = 'black';
-            this.ctx.lineWidth   = this.lineWidth;
+            this.ctx.lineWidth   = this.lineWidth * scale;
             this.ctx.fillStyle = "white"
             this.ctx.fill();
             this.ctx.stroke();
@@ -542,6 +555,7 @@ class DrawManage{
               this.buildCameraMatrix(),
               pos, 
               angleMatrix,
+              scaleMatrix,
               //negpos, 
               startMatrix
             );
@@ -549,7 +563,7 @@ class DrawManage{
             const yl = convertedStartPos.get([1,0]);
           
             this.ctx.beginPath();         // ✅ 라인 전용 path 시작
-            this.ctx.lineWidth = this.lineWidth;
+            this.ctx.lineWidth = this.lineWidth * scale;
             this.ctx.strokeStyle = 'black';
             this.ctx.moveTo(xl, yl);
             break;
@@ -563,6 +577,7 @@ class DrawManage{
               this.buildCameraMatrix(),
               pos,
               angleMatrix, 
+              scaleMatrix,
               //negpos, 
               finishMatrix
             );
@@ -592,7 +607,7 @@ class DrawManage{
       [obj.y],
       [1]
     ]);
-    
+    const scale = this.objScale
     const convertedPos = math.multiply(
       this.buildWorldToCanvasMatrix(),
       this.buildCameraMatrix(),
@@ -603,9 +618,9 @@ class DrawManage{
     const y = convertedPos.get([1,0]);
     
     this.ctx.fillStyle = "#aaff88"
-    this.ctx.lineWidth   = this.lineWidth;
+    this.ctx.lineWidth   = this.lineWidth * scale;
     this.ctx.beginPath();
-    this.ctx.arc(x,y,radius*this.camera.zoom*this.viewport.pixelPerGrid,0,Math.PI*2)
+    this.ctx.arc(x,y,radius*this.camera.zoom*this.viewport.pixelPerGrid * scale,0,Math.PI*2)
     this.ctx.stroke();
     this.ctx.fill();
     this.ctx.closePath();
@@ -620,6 +635,8 @@ class DrawManage{
       [1]
     ]);
     
+    const scale = this.objScale
+    
     const convertedPos = math.multiply(
       this.buildWorldToCanvasMatrix(),
       this.buildCameraMatrix(),
@@ -630,9 +647,9 @@ class DrawManage{
     const y = convertedPos.get([1,0]);
     
     this.ctx.fillStyle = "#ffaa88"
-    this.ctx.lineWidth   = this.lineWidth;
+    this.ctx.lineWidth   = this.lineWidth * scale;
     this.ctx.beginPath();
-    this.ctx.arc(x,y,radius*this.camera.zoom*this.viewport.pixelPerGrid,0,Math.PI*2)
+    this.ctx.arc(x,y,radius*this.camera.zoom*this.viewport.pixelPerGrid * scale,0,Math.PI*2)
     this.ctx.stroke();
     this.ctx.fill();
     this.ctx.closePath();
@@ -652,19 +669,19 @@ class DrawManage{
       this.buildCameraMatrix(),
       pos
     );
-    
+    const scale = this.objScale
     const x = convertedPos.get([0,0]);
     const y = convertedPos.get([1,0]);
     
     this.ctx.fillStyle = "#fff"
-    this.ctx.lineWidth   = this.lineWidth;
+    this.ctx.lineWidth   = this.lineWidth * scale;
     this.ctx.beginPath();
-    this.ctx.arc(x,y,radius*this.camera.zoom*this.viewport.pixelPerGrid,0,Math.PI*2)
+    this.ctx.arc(x,y,radius*this.camera.zoom*this.viewport.pixelPerGrid * scale,0,Math.PI*2)
     this.ctx.stroke();
     this.ctx.fill();
     this.ctx.closePath();
     
-    const axisSize = 0.1 * this.camera.zoom * this.viewport.pixelPerGrid;
+    const axisSize = 0.1 * this.camera.zoom * this.viewport.pixelPerGrid * scale;
     
     this.ctx.strokeStyle = "black";
     
@@ -824,14 +841,24 @@ class TouchManage{
     
     this.canvas.addEventListener('pointermove', e=>{
       const p = this.pointers.get(e.pointerId);
-      if(p){
+      if(p?.isMoved == true){
         p.exX = p.x;
         p.exY = p.y;
         
         p.x = e.clientX;
         p.y = e.clientY;
-        
-        if(p.exX != p.x && p.exY != p.y) p.isMoved = true;
+        //console.log('moving!')
+      }
+      else if(p?.isMoved == false){
+        p.x = e.clientX;
+        p.y = e.clientY;
+        let d = Math.hypot(p.x-p.exX, p.y - p.exY)
+        const threshold = 20
+        if(d > threshold){
+          p.isMoved = true;
+          //console.log('moved!')
+        }
+        return;
       }
       
       //console.log(this.pointers.size)
@@ -964,7 +991,7 @@ class Camera{
     this.x = 50000;
     this.y = 50000;
     this.rotation = 0; //radian; 쓸데는 없을듯
-    this.zoom = 0.5;
+    this.zoom = .03;
     
     this.vecX = 0;
     this.vecY = 0;
@@ -1113,7 +1140,15 @@ class App{
     this.loop = this.loop.bind(this)
     this._tPrev = performance.now();
   
-    
+    this.posbtn = document.getElementById('sub_pos');
+    this.posbtn.addEventListener('pointerup', (e) => {
+      const posX = document.getElementById('inp_posX');
+      const posY = document.getElementById('inp_posY');
+      
+      this.system.camera.focusPushTo(posX.value, posY.value);
+      
+      posX.innerText = posY.innerText = ""
+    })
     
     this.objbar = document.getElementById("objbar")
     this.objbar.addEventListener("pointerup", (e) => {
