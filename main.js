@@ -773,13 +773,15 @@ class DrawManage{
     const obj = this.system.selectedObject;
     if(!obj) return;
     
+    const scale = this.objScale;
+    
     const pos = math.matrix([
       [obj.x],
       [obj.y],
       [1]
     ]); //박격포 중심의 위치
     
-    const radius = 0.7* this.camera.zoom *this.viewport.pixelPerGrid;
+    const radius = 0.7* this.camera.zoom *this.viewport.pixelPerGrid * scale;
           
     const convertedPos = math.multiply(
       this.buildWorldToCanvasMatrix(),
